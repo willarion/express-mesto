@@ -1,12 +1,28 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
 const path = require('path');
+const bodyParser = require('body-parser');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const PORT = 3000;
 
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+    useFindAndModify: false
+});
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5fdbc2ba44407906a0750fdf'
+  };
+
+  next();
+});
+
 
 app.use('/', usersRouter);
 app.use('/', cardsRouter);

@@ -1,29 +1,29 @@
-const getDataFromFile = require('../helpers/getDataFromFile');
-const path = require('path');
+const User = require('../models/user');
 
-
-const pathToData = path.join(__dirname, '..', 'data', 'users.json');
 
 function getUsers(req, res) {
-
-  return getDataFromFile(pathToData)
-  .then(users => res.status(200).send(users))
-  .catch(err => res.status(500).send(err));
+  User.find({})
+    .then(users => res.send(users))
+    .catch(err => res.status(500).send({ message: 'Произошла ошибка', error: err }));
 }
 
 function getUserProfile(req, res) {
-  return getDataFromFile(pathToData)
-  .then(users => users.find(user => user._id === req.params.id))
-  .then((user) => {
-    if (!user) {
-      return res.status(404).send({message: "Нет пользователя с таким id"});
-    }
-    return res.status(200).send(user);
-  })
-  .catch(err => res.status(500).send(err));
+  User.findById(req.params.id)
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: 'Произошла ошибка', error: err }));
 }
+
+function createUser(req, res) {
+  const { name, about, avatar } = req.body;
+
+  User.create({ name, about, avatar })
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: 'Произошла ошибка', error: err }));
+}
+
 
 module.exports = {
   getUsers,
-  getUserProfile
+  getUserProfile,
+  createUser
 }
