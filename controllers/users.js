@@ -38,8 +38,8 @@ function createUser(req, res) {
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidatorError') {
-        invalidDataNotification(res,err, 'Введённые данные невалидны');
+      if (err.name === 'ValidationError') {
+        invalidDataNotification(res, err, 'Введённые данные невалидны');
         return;
       }
       serverErrorNotification(res, err, 'Серверная ошибка');
@@ -62,6 +62,10 @@ function updateUserProfile(req, res) {
     })
     .then(user => res.send({ data: user }))
     .catch((err) => {
+      if (err.name === 'ValidationError') {
+        invalidDataNotification(res, err, 'Введённые данные невалидны');
+        return;
+      }
       if (err.kind === 'ObjectId') {
         invalidDataNotification(res, err, 'Невалидный id пользователя');
         return;
@@ -88,6 +92,10 @@ function updateUserAvatar(req, res) {
     })
     .then(user => res.send({ data: user }))
     .catch((err) => {
+      if (err.name === 'ValidationError') {
+        invalidDataNotification(res,err, 'Введённые данные невалидны');
+        return;
+      }
       if (err.kind === 'ObjectId') {
         invalidDataNotification(res, err, 'Невалидный id пользователя');
         return;

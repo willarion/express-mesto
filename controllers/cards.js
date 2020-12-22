@@ -10,7 +10,6 @@ const {
 
 function getCards(req, res) {
   Card.find({})
-    .populate('owner')
     .then(cards => res.send(cards))
     .catch(err => serverErrorNotification(res, err, 'Серверная ошибка'));
 }
@@ -21,7 +20,7 @@ function createCard(req, res) {
   Card.create({name, link, owner: req.user._id })
     .then(card => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidatorError') {
+      if (err.name === 'ValidationError') {
         invalidDataNotification(res, err, 'Введённые данные невалидны');
         return;
       }
