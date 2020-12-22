@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { errorCodes } = require('../utils/constants');
+const { ERROR_NOT_FOUND } = require('../utils/constants');
 const {
   serverErrorNotification,
   invalidDataNotification,
@@ -12,7 +12,7 @@ function getCards(req, res) {
   Card.find({})
     .populate('owner')
     .then(cards => res.send(cards))
-    .catch(err => serverErrorNotification(err, 'Серверная ошибка'));
+    .catch(err => serverErrorNotification(res, err, 'Серверная ошибка'));
 }
 
 function createCard(req, res) {
@@ -22,9 +22,10 @@ function createCard(req, res) {
     .then(card => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidatorError') {
-        invalidDataNotification(err, 'Введённые данные невалидны');
+        invalidDataNotification(res, err, 'Введённые данные невалидны');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 
@@ -36,13 +37,15 @@ function deleteCard(req, res) {
     })
     .then(card => res.send({ data: card, message: "карточка удалена" }))
     .catch((err) => {
-      if(err.kind === 'ObjectId') {
-        invalidDataNotification(err, 'Невалидный id карточки');
+      if (err.kind === 'ObjectId') {
+        invalidDataNotification(res, err, 'Невалидный id карточки');
+        return;
       }
-      if (err.statusCode === errorCodes.ERROR_NOT_FOUND) {
-        nonExistentDataNotification(err, 'Карточки с таким id не существует');
+      if (err.statusCode === ERROR_NOT_FOUND) {
+        nonExistentDataNotification(res, err, 'Карточки с таким id не существует');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 
@@ -57,13 +60,15 @@ function likeCard(req, res) {
     })
     .then(card => res.send({ data: card, message: "лайк поставлен" }))
     .catch((err) => {
-      if(err.kind === 'ObjectId') {
-        invalidDataNotification(err, 'Невалидный id карточки');
+      if (err.kind === 'ObjectId') {
+        invalidDataNotification(res, err, 'Невалидный id карточки');
+        return;
       }
-      if (err.statusCode === errorCodes.ERROR_NOT_FOUND) {
-        nonExistentDataNotification(err, 'Карточки с таким id не существует');
+      if (err.statusCode === ERROR_NOT_FOUND) {
+        nonExistentDataNotification(res, err, 'Карточки с таким id не существует');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 
@@ -78,13 +83,14 @@ function dislikeCard(req, res) {
     })
     .then(card => res.send({ data: card, message: "лайк удалён" }))
     .catch((err) => {
-      if(err.kind === 'ObjectId') {
-        invalidDataNotification(err, 'Невалидный id карточки');
+      if (err.kind === 'ObjectId') {
+        invalidDataNotification(res, err, 'Невалидный id карточки');
       }
-      if (err.statusCode === errorCodes.ERROR_NOT_FOUND) {
-        nonExistentDataNotification(err, 'Карточки с таким id не существует');
+      if (err.statusCode === ERROR_NOT_FOUND) {
+        nonExistentDataNotification(res, err, 'Карточки с таким id не существует');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 

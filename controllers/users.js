@@ -1,6 +1,5 @@
 const User = require('../models/user');
-const { errorCodes } = require('../utils/constants');
-const {
+const { ERROR_NOT_FOUND } = require('../utils/constants');const {
   serverErrorNotification,
   invalidDataNotification,
   nonExistentDataNotification,
@@ -11,7 +10,7 @@ const {
 function getUsers(req, res) {
   User.find({})
     .then(users => res.send(users))
-    .catch(err => serverErrorNotification(err, 'Серверная ошибка'));
+    .catch(err => serverErrorNotification(res, err, 'Серверная ошибка'));
 }
 
 function getUserProfile(req, res) {
@@ -21,13 +20,15 @@ function getUserProfile(req, res) {
     })
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if(err.kind === 'ObjectId') {
-        invalidDataNotification(err, 'Невалидный id пользователя');
+      if (err.kind === 'ObjectId') {
+        invalidDataNotification(res, err, 'Невалидный id пользователя');
+        return;
       }
-      if (err.statusCode === errorCodes.ERROR_NOT_FOUND) {
-        nonExistentDataNotification(err, 'Пользователя с таким id не существует');
+      if (err.statusCode === ERROR_NOT_FOUND) {
+        nonExistentDataNotification(res, err, 'Пользователя с таким id не существует');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 
@@ -38,9 +39,10 @@ function createUser(req, res) {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidatorError') {
-        invalidDataNotification(err, 'Введённые данные невалидны');
+        invalidDataNotification(res,err, 'Введённые данные невалидны');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 
@@ -60,13 +62,15 @@ function updateUserProfile(req, res) {
     })
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if(err.kind === 'ObjectId') {
-        invalidDataNotification(err, 'Невалидный id пользователя');
+      if (err.kind === 'ObjectId') {
+        invalidDataNotification(res, err, 'Невалидный id пользователя');
+        return;
       }
-      if (err.statusCode === errorCodes.ERROR_NOT_FOUND) {
-        nonExistentDataNotification(err, 'Пользователя с таким id не существует');
+      if (err.statusCode === ERROR_NOT_FOUND) {
+        nonExistentDataNotification(res, err, 'Пользователя с таким id не существует');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 
@@ -84,13 +88,15 @@ function updateUserAvatar(req, res) {
     })
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if(err.kind === 'ObjectId') {
-        invalidDataNotification(err, 'Невалидный id пользователя');
+      if (err.kind === 'ObjectId') {
+        invalidDataNotification(res, err, 'Невалидный id пользователя');
+        return;
       }
-      if (err.statusCode === errorCodes.ERROR_NOT_FOUND) {
-        nonExistentDataNotification(err, 'Пользователя с таким id не существует');
+      if (err.statusCode === ERROR_NOT_FOUND) {
+        nonExistentDataNotification(res, err, 'Пользователя с таким id не существует');
+        return;
       }
-      serverErrorNotification(err, 'Серверная ошибка');
+      serverErrorNotification(res, err, 'Серверная ошибка');
     });
 }
 
