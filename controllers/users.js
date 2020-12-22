@@ -40,9 +40,49 @@ function createUser(req, res) {
     });
 }
 
+function updateUserProfile(req, res) {
+  User.findByIdAndUpdate(req.user._id,
+    {
+    name: req.body.name,
+    about: req.body.about
+    }, {
+    new: true,
+    runValidators: true,
+    upsert: true
+    }
+  )
+    .then(user => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidatorError') {
+        return res.status(errorCodes.ERROR_INVALID_ID).send({ message: 'Введённые данные невалидны' })
+      }
+      res.status(errorCodes.ERROR_SERVER).send({ message: 'Произошла ошибка на сервере', error: err })
+    });
+}
+
+function updateUserAvatar(req, res) {
+  User.findByIdAndUpdate(req.user._id,
+    {avatar: req.body.avatar},
+    {
+    new: true,
+    runValidators: true,
+    upsert: true
+    }
+  )
+    .then(user => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidatorError') {
+        return res.status(errorCodes.ERROR_INVALID_ID).send({ message: 'Введённые данные невалидны' })
+      }
+      res.status(errorCodes.ERROR_SERVER).send({ message: 'Произошла ошибка на сервере', error: err })
+    });
+}
+
 
 module.exports = {
   getUsers,
   getUserProfile,
-  createUser
+  createUser,
+  updateUserProfile,
+  updateUserAvatar
 }
